@@ -2,6 +2,7 @@
 Dockerized version of clamav daemon, based on Alpine Linux
 
 ## Usage
+Clamav will run listening on port 3310, then you can point your service/container (Exim ,Rspamd, etc...) to this port.
 You can run this container with this command:  
 `docker run -d --name clamav-alpine neomediatech/clamav-alpine`  
 
