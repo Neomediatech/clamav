@@ -5,7 +5,7 @@ LABEL maintainer="docker-dario@neomediatech.it"
 ENV CLAM_VERSION=0.100.2-r0
 
 RUN apk update && apk upgrade && apk add --no-cache tzdata && cp /usr/share/zoneinfo/Europe/Rome /etc/localtime
-RUN apk add --no-cache tini clamav-daemon freshclam clamav-libunrar wget netcat-openbsd && \
+RUN apk add --no-cache tini clamav-daemon freshclam clamav-libunrar wget netcat-openbsd bash && \
     sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
     echo "TCPAddr 0.0.0.0" >> /etc/clamav/clamd.conf && \
     echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
