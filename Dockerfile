@@ -1,4 +1,4 @@
-FROM alpine
+FROM alpine:3.9
 
 LABEL maintainer="docker-dario@neomediatech.it"
 
@@ -6,7 +6,7 @@ ENV CLAM_VERSION=0.100.2-r0
 
 RUN apk update && apk upgrade && apk add --no-cache tzdata && cp /usr/share/zoneinfo/Europe/Rome /etc/localtime
 RUN apk add --no-cache tini clamav-daemon freshclam clamav-libunrar wget netcat-openbsd bash && \
-    sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/clamd.conf && \
+    sed -i 's/^#Foreground .*$/Foreground yes/g' /etc/clamav/clamd.conf && \
     echo "TCPAddr 0.0.0.0" >> /etc/clamav/clamd.conf && \
     echo "TCPSocket 3310" >> /etc/clamav/clamd.conf && \
     sed -i 's/^Foreground .*$/Foreground true/g' /etc/clamav/freshclam.conf && \ 
@@ -19,10 +19,11 @@ RUN apk add --no-cache tini clamav-daemon freshclam clamav-libunrar wget netcat-
     chown clamav:clamav /var/run/clamav && \
     chmod 750 /var/run/clamav
 
-COPY init.sh /
-RUN chmod +x /init.sh
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 EXPOSE 3310
 
 HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=3 CMD echo PING | nc -U /run/clamav/clamd.sock || exit 1
-ENTRYPOINT ["/sbin/tini", "--", "/init.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/sbin/tini", "--", "clamd"]
