@@ -6,5 +6,5 @@ mkdir -p $DIR ; chown clamav:clamav $DIR ; touch $LOGS ; chown clamav:clamav $LO
 
 exec freshclam -d &
 
-exec tail -f $LOGS
+exec tail -f $LOGS &
 exec "$@"
