@@ -1,11 +1,12 @@
 FROM ubuntu:18.04
 
-LABEL maintainer="docker-dario@neomediatech.it"
+ENV CLAMAV_VERSION="0.101.1"
+
+LABEL maintainer="docker-dario@neomediatech.it" \ 
+      org.label-schema.version=${CLAMAV_VERSION}
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Rome
-
-ENV CLAMAV_VERSION="0.101.1"
 
 RUN echo $TZ /etc/timezone && \ 
     apt-get update && \
