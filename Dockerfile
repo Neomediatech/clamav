@@ -7,8 +7,9 @@ ENV TZ=Europe/Rome
 
 ENV CLAMAV_VERSION="0.101.1"
 
-RUN apt-get update && \
-    apt-get install -y ca-certificates curl build-essential libpcre3-dev libssl-dev libxml2-dev libxml2 netcat && \
+RUN echo $TZ /etc/timezone && \ 
+    apt-get update && \
+    apt-get install -y ca-certificates curl build-essential libpcre3-dev libssl-dev libxml2-dev libxml2 netcat tzdata && \
     curl --fail --show-error --location --output clamav-${CLAMAV_VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${CLAMAV_VERSION}.tar.gz" && \
     curl --fail --show-error --location --output clamav-${CLAMAV_VERSION}.tar.gz.sig -- "http://www.clamav.net/downloads/production/clamav-${CLAMAV_VERSION}.tar.gz.sig" && \
     tar --extract --gzip --file=clamav-${CLAMAV_VERSION}.tar.gz && \
@@ -44,6 +45,8 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     sed -i 's/#LocalSocket.*$/LocalSocket \/run\/clamav\/clamd.sock/' ${CLAM_ETC}/clamd.conf && \
     echo "TCPAddr 0.0.0.0" >> ${CLAM_ETC}/clamd.conf && \
     echo "TCPSocket 3310" >> ${CLAM_ETC}/clamd.conf && \
+    echo "LogFile /var/log/clamav/clamd.log" >> ${CLAM_ETC}/clamd.conf && \
+    echo "LogTime yes" >> ${CLAM_ETC}/clamd.conf && \
     mkdir ${CLAM_DB} && \
     chown ${CLAM_USER}: ${CLAM_DB} 
 #    freshclam --version
