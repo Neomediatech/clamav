@@ -1,5 +1,5 @@
 [![](https://images.microbadger.com/badges/image/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu)
-[![](https://images.microbadger.com/badges/license/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-docker-ubuntu)
+[![](https://images.microbadger.com/badges/license/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu)
 ![](https://img.shields.io/github/last-commit/Neomediatech/clamav-docker-ubuntu.svg?style=plastic)
 ![](https://img.shields.io/github/repo-size/Neomediatech/clamav-docker-ubuntu.svg?style=plastic)
 
