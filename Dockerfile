@@ -28,7 +28,7 @@ RUN echo $TZ /etc/timezone && \
 ENV CLAM_USER="clamav" \
     CLAM_UID="1000" \
     CLAM_ETC="/usr/local/etc" \
-    CLAM_DB="/usr/local/share/clamav" \
+    CLAM_DB="/var/lib/clamav" \
     CLAM_CHECKS="24" \
     CLAM_DAEMON_FOREGROUND="yes"
 RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
@@ -39,6 +39,8 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
       s/#Checks 24/Checks ${CLAM_CHECKS}/; \
       s/#Foreground yes/Foreground ${CLAM_DAEMON_FOREGROUND}/; \ 
       s/#NotifyClamd.*$/NotifyClamd \/usr\/local\/etc\/clamd\.conf/" ${CLAM_ETC}/freshclam.conf && \
+    echo "UpdateLogFile /var/log/clamav/freshclam.log" >> ${CLAM_ETC}/freshclam.conf && \
+    echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/freshclam.conf && \
     cp ${CLAM_ETC}/clamd.conf.sample ${CLAM_ETC}/clamd.conf && \
     sed -i 's/^#Foreground .*$/Foreground yes/g' ${CLAM_ETC}/clamd.conf && \
     sed -i 's/^Example/#Example/' ${CLAM_ETC}/clamd.conf && \
@@ -47,12 +49,13 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     echo "TCPSocket 3310" >> ${CLAM_ETC}/clamd.conf && \
     echo "LogFile /var/log/clamav/clamd.log" >> ${CLAM_ETC}/clamd.conf && \
     echo "LogTime yes" >> ${CLAM_ETC}/clamd.conf && \
+    echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/clamd.conf && \
     mkdir ${CLAM_DB} && \
     chown ${CLAM_USER}: ${CLAM_DB} 
 #    freshclam --version
 
 # volume for virus definitions
-VOLUME ["/usr/local/share/clamav"]
+VOLUME ["/var/lib/clamav"]
 
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
