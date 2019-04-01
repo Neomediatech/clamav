@@ -8,7 +8,7 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Rome
 
-RUN echo $TZ /etc/timezone && \ 
+RUN echo $TZ > /etc/timezone && \ 
     apt-get update && \
     apt-get install -y ca-certificates curl build-essential libpcre3-dev libssl-dev libxml2-dev libxml2 netcat tzdata && \
     curl --fail --show-error --location --output clamav-${CLAMAV_VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${CLAMAV_VERSION}.tar.gz" && \
