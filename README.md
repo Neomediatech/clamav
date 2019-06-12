@@ -1,4 +1,5 @@
 <!-- [![](https://images.microbadger.com/badges/version/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu "Get your own version badge on microbadger.com") -->
+![GitHub tag (latest by date)](https://img.shields.io/github/tag-date/neomediatech/clamav-docker-ubuntu.svg?color=%234CC71F&label=version)
 [![](https://images.microbadger.com/badges/image/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu)
 ![](https://img.shields.io/github/last-commit/Neomediatech/clamav-docker-ubuntu.svg?style=plastic)
 ![](https://img.shields.io/github/repo-size/Neomediatech/clamav-docker-ubuntu.svg?style=plastic)
@@ -11,7 +12,7 @@ You can run this container with this command:
 `docker run -d --name clamav-ubuntu neomediatech/clamav-ubuntu`  
 
 Logs are written inside the container, in /var/log/clamav/, and on stdout. You can see realtime logs running this command:  
-`docker logs -f clamav-alpine`  
+`docker logs -f clamav-ubuntu`  
 `CTRL c` to stop seeing logs.  
 
 If you want to map logs outside the container you can add:  
