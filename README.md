@@ -1,5 +1,4 @@
-<!-- [![](https://images.microbadger.com/badges/version/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu "Get your own version badge on microbadger.com") -->
-![GitHub tag (latest by date)](https://img.shields.io/github/tag-date/neomediatech/clamav-docker-ubuntu.svg?color=%234CC71F&label=version)
+[![](https://images.microbadger.com/badges/version/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu "Get your own version badge on microbadger.com")
 [![](https://images.microbadger.com/badges/image/neomediatech/clamav-ubuntu.svg)](https://microbadger.com/images/neomediatech/clamav-ubuntu)
 ![](https://img.shields.io/github/last-commit/Neomediatech/clamav-docker-ubuntu.svg?style=plastic)
 ![](https://img.shields.io/github/repo-size/Neomediatech/clamav-docker-ubuntu.svg?style=plastic)
