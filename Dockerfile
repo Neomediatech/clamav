@@ -3,7 +3,9 @@ FROM ubuntu:18.04
 ENV CLAMAV_VERSION="0.101.2"
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 
-      org.label-schema.version=${CLAMAV_VERSION}
+      org.label-schema.version=$CLAMAV_VERSION \
+      org.label-schema.vcs-type=Git \
+      org.label-schema.vcs-url=https://github.com/Neomediatech/clamav-docker-ubuntu
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Europe/Rome
