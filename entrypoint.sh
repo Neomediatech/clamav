@@ -24,3 +24,4 @@ exec /usr/local/bin/freshclam -d &
 
 exec tail -f $LOGS &
 exec "$@"
+
