@@ -56,7 +56,6 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/clamd.conf && \
     mkdir ${CLAM_DB} && \
     chown ${CLAM_USER}: ${CLAM_DB} 
-#    freshclam --version
 
 # volume for virus definitions
 VOLUME ["/var/lib/clamav"]
