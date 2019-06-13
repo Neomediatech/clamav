@@ -14,7 +14,7 @@ if [ -d /usr/local/share/clamav ]; then
 fi
 
 for file in bytecode.cvd daily.cvd main.cvd; do
-  if [ ! -f $CLAMDIR//$file ]; then
+  if [ ! -f $CLAMDIR/$file ]; then
     curl -o $CLAMDIR/$file http://database.clamav.net/$file
     chown clamav:clamav $CLAMDIR/$file
   fi
@@ -24,4 +24,3 @@ exec /usr/local/bin/freshclam -d &
 
 exec tail -f $LOGS &
 exec "$@"
-
