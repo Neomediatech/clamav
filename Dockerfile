@@ -65,6 +65,6 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 3310
 
-HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=3 CMD echo PING | nc 127.0.0.1 3310 || exit 1
+HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=30 CMD echo PING | nc 127.0.0.1 3310 || exit 1
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/local/sbin/clamd"]
