@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-ENV CLAMAV_VERSION="0.101.3"
+ENV CLAMAV_VERSION="0.101.4"
 
 LABEL maintainer="docker-dario@neomediatech.it" \ 
       org.label-schema.version=$CLAMAV_VERSION \
