@@ -1,15 +1,16 @@
-FROM ubuntu:18.04
+FROM neomediatech/ubuntu-base
 
-ENV CLAMAV_VERSION="0.101.4"
+ENV VERSION=0.101.4 \
+    SERVICE=clamav-docker-ubuntu \
+    OS=ubuntu \
+    DEBIAN_FRONTEND=noninteractive \
+    TZ=Europe/Rome
 
-LABEL maintainer="docker-dario@neomediatech.it" \ 
-      org.label-schema.version=$CLAMAV_VERSION \
+LABEL maintainer="docker-dario@neomediatech.it" \
+      org.label-schema.version=$VERSION \
       org.label-schema.vcs-type=Git \
-      org.label-schema.vcs-url=https://github.com/Neomediatech/clamav-docker-ubuntu \
+      org.label-schema.vcs-url=https://github.com/Neomediatech/$SERVICE \
       org.label-schema.maintainer=Neomediatech
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=Europe/Rome
 
 RUN echo $TZ > /etc/timezone && \ 
     apt-get update && \
@@ -48,7 +49,7 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     cp ${CLAM_ETC}/clamd.conf.sample ${CLAM_ETC}/clamd.conf && \
     sed -i 's/^#Foreground .*$/Foreground yes/g' ${CLAM_ETC}/clamd.conf && \
     sed -i 's/^Example/#Example/' ${CLAM_ETC}/clamd.conf && \
-    sed -i 's/#LocalSocket.*$/LocalSocket \/run\/clamav\/clamd.sock/' ${CLAM_ETC}/clamd.conf && \
+    sed -i 's/#LocalSocket.*$/LocalSocket \/run\/clamav\/clamd.ctl/' ${CLAM_ETC}/clamd.conf && \
     echo "TCPAddr 0.0.0.0" >> ${CLAM_ETC}/clamd.conf && \
     echo "TCPSocket 3310" >> ${CLAM_ETC}/clamd.conf && \
     echo "LogFile /var/log/clamav/clamd.log" >> ${CLAM_ETC}/clamd.conf && \
