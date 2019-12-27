@@ -1,6 +1,6 @@
 FROM neomediatech/ubuntu-base
 
-ENV VERSION=0.101.4 \
+ENV VERSION=0.102.1 \
     SERVICE=clamav-docker-ubuntu \
     OS=ubuntu \
     DEBIAN_FRONTEND=noninteractive \
@@ -12,21 +12,22 @@ LABEL maintainer="docker-dario@neomediatech.it" \
       org.label-schema.vcs-url=https://github.com/Neomediatech/$SERVICE \
       org.label-schema.maintainer=Neomediatech
 
-RUN echo $TZ > /etc/timezone && \ 
-    apt-get update && \
-    apt-get install -y ca-certificates curl build-essential libpcre3-dev libssl-dev libxml2-dev libxml2 netcat tzdata && \
-    curl --fail --show-error --location --output clamav-${CLAMAV_VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${CLAMAV_VERSION}.tar.gz" && \
-    curl --fail --show-error --location --output clamav-${CLAMAV_VERSION}.tar.gz.sig -- "http://www.clamav.net/downloads/production/clamav-${CLAMAV_VERSION}.tar.gz.sig" && \
-    tar --extract --gzip --file=clamav-${CLAMAV_VERSION}.tar.gz && \
-    cd clamav-${CLAMAV_VERSION} && \
+RUN apt-get update && \
+    apt-get install -y ca-certificates curl build-essential libxml2 netcat \ 
+                       openssl libssl-dev libcurl4-openssl-dev zlib1g-dev libpng-dev \ 
+                       libxml2-dev libjson-c-dev libbz2-dev libpcre3-dev ncurses-dev && \
+    curl --fail --show-error --location --output clamav-${VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz" && \
+    curl --fail --show-error --location --output clamav-${VERSION}.tar.gz.sig -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz.sig" && \
+    tar --extract --gzip --file=clamav-${VERSION}.tar.gz && \
+    cd clamav-${VERSION} && \
     ./configure && \
-    make && make install && \
+    make -j2 && make install && \
     ldconfig && \
-    cd .. && rm -rf clamav-${CLAMAV_VERSION}* && \
+    cd .. && rm -rf clamav-${VERSION}* && \
     apt-get purge -y --auto-remove \
       build-essential \
-      libpcre3-dev \
-      libssl-dev && \
+      libpcre3-dev libcurl4-openssl-dev zlib1g-dev libpng-dev\
+      libssl-dev libxml2-dev libbz2-dev libpcre3-dev ncurses-dev && \
     rm -rf /var/lib/apt/lists*
 
 # configure freshclam
