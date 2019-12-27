@@ -48,9 +48,9 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     echo "UpdateLogFile /var/log/clamav/freshclam.log" >> ${CLAM_ETC}/freshclam.conf && \
     echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/freshclam.conf && \
     cp ${CLAM_ETC}/clamd.conf.sample ${CLAM_ETC}/clamd.conf && \
-    sed -i 's/^#Foreground .*$/Foreground yes/g' ${CLAM_ETC}/clamd.conf && \
+    echo "Foreground yes" >> ${CLAM_ETC}/clamd.conf && \
     sed -i 's/^Example/#Example/' ${CLAM_ETC}/clamd.conf && \
-    sed -i 's/#LocalSocket.*$/LocalSocket \/run\/clamav\/clamd.ctl/' ${CLAM_ETC}/clamd.conf && \
+    echo "LocalSocket /run/clamav/clamd.ctl" >> ${CLAM_ETC}/clamd.conf && \
     echo "TCPAddr 0.0.0.0" >> ${CLAM_ETC}/clamd.conf && \
     echo "TCPSocket 3310" >> ${CLAM_ETC}/clamd.conf && \
     echo "LogFile /var/log/clamav/clamd.log" >> ${CLAM_ETC}/clamd.conf && \
