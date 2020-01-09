@@ -1,10 +1,8 @@
-FROM neomediatech/ubuntu-base
+FROM neomediatech/ubuntu-base:latest
 
 ENV VERSION=0.102.1 \
     SERVICE=clamav-docker-ubuntu \
-    OS=ubuntu \
     DEBIAN_FRONTEND=noninteractive \
-    TZ=Europe/Rome
 
 LABEL maintainer="docker-dario@neomediatech.it" \
       org.label-schema.version=$VERSION \
@@ -67,6 +65,6 @@ RUN chmod +x /entrypoint.sh
 
 EXPOSE 3310
 
-HEALTHCHECK --interval=10s --timeout=3s --start-period=60s --retries=30 CMD echo PING | nc 127.0.0.1 3310 || exit 1
+HEALTHCHECK --interval=60s --timeout=3s --start-period=60s --retries=10 CMD echo PING | nc 127.0.0.1 3310 || exit 1
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/local/sbin/clamd"]
