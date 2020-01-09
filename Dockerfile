@@ -1,8 +1,7 @@
 FROM neomediatech/ubuntu-base:latest
 
 ENV VERSION=0.102.1 \
-    SERVICE=clamav \
-    DEBIAN_FRONTEND=noninteractive
+    SERVICE=clamav
 
 LABEL maintainer="docker-dario@neomediatech.it" \
       org.label-schema.version=$VERSION \
