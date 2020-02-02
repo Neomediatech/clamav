@@ -15,12 +15,45 @@ fi
 
 for file in bytecode.cvd daily.cvd main.cvd; do
   if [ ! -f $CLAMDIR/$file ]; then
+    echo "$CLAMDIR/$file not found, downloading from database.clamav.net..."
     curl -o $CLAMDIR/$file http://database.clamav.net/$file
     chown clamav:clamav $CLAMDIR/$file
   fi
 done
 
+# set Clamav Unofficial Sigs
+UNOFFICIAL_SIGS=${UNOFFICIAL_SIGS:-yes}
+if [ $UNOFFICIAL_SIGS = "yes" ]; then
+  BASE_URL="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master"
+  cd /
+  curl --fail --show-error --location --output clamav-unofficial-sigs.sh -- ${BASE_URL}/clamav-unofficial-sigs.sh
+  chmod +x clamav-unofficial-sigs.sh
+  [ ! -d /etc/clamav-unofficial-sigs ] && mkdir -p /etc/clamav-unofficial-sigs
+  cd /etc/clamav-unofficial-sigs
+  [ ! -f master.conf ] && curl --fail --show-error --location --output master.conf -- ${BASE_URL}/config/master.conf
+  [ ! -f user.conf ]   && curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf
+  if [ ! -f os.conf ]; then
+    cat <<EOF > os.conf
+clam_user="clamav"
+clam_group="clamav"
+clam_dbs="/var/lib/clamav"
+clamd_socket="/run/clamav/clamd.ctl"
+# https://eXtremeSHOK.com ######################################################
+EOF
+  fi
+  MISSING=""
+  which host 1>/dev/null
+  [ $? -ne 0 ] && MISSING="bind9-host"
+  which rsync 1>/dev/null
+  [ $? -ne 0 ] && MISSING="$MISSING rsync"
+  apt-get update 
+  apt-get install -y --no-install-recommends $MISSING
+  rm -rf /var/lib/apt/lists*
+  /clamav-unofficial-sigs.sh --verbose
+  while true; do sleep 3600 ; /clamav-unofficial-sigs.sh --verbose ; done &
+fi
+
 exec /usr/local/bin/freshclam -d &
 
-exec tail -f $LOGS &
+exec tail -F $LOGS &
 exec "$@"
