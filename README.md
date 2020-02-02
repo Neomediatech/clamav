@@ -40,3 +40,8 @@ Where "/folder/path/on-host/logs/" is a folder inside your host. You have to cre
 
 Save on a file and then run:  
 `docker stack deploy -c /your-docker-compose-file-just-created.yml clamav`  
+
+## Unofficial Signatures
+From this Dockerfile version, Unofficial Signatures are enabled by default.  
+If you don't want it run the container wit env variable `UNOFFICIAL_SIGS=no`  
+for ex: `docker run -d --name clamav -e UNOFFICIAL_SIGS=no neomediatech/clamav`  
