@@ -38,6 +38,7 @@ clam_user="clamav"
 clam_group="clamav"
 clam_dbs="/var/lib/clamav"
 clamd_socket="/run/clamav/clamd.ctl"
+enable_random="no"
 # https://eXtremeSHOK.com ######################################################
 EOF
   fi
@@ -49,10 +50,10 @@ EOF
   apt-get update 
   apt-get install -y --no-install-recommends $MISSING
   rm -rf /var/lib/apt/lists*
-  prev_file=$(cat /etc/clamav-unofficial-sigs/os.conf)
-  echo 'enable_random="no"' >> /etc/clamav-unofficial-sigs/os.conf
+  # prev_file=$(cat /etc/clamav-unofficial-sigs/os.conf)
+  # echo 'enable_random="no"' >> /etc/clamav-unofficial-sigs/os.conf
   /clamav-unofficial-sigs.sh --verbose
-  echo "$prev_file" > /etc/clamav-unofficial-sigs/os.conf
+  # echo "$prev_file" > /etc/clamav-unofficial-sigs/os.conf
   while true; do sleep 3600 ; /clamav-unofficial-sigs.sh --verbose ; done &
 fi
 
