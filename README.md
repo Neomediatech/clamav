@@ -3,7 +3,7 @@
 ![](https://img.shields.io/github/last-commit/Neomediatech/clamav.svg?style=plastic)
 ![](https://img.shields.io/github/repo-size/Neomediatech/clamav.svg?style=plastic)
 
-Dockerized version of clamav daemon, based on Ubuntu
+Dockerized version of clamav daemon, based on Ubuntu, with [Unofficial Signatures](https://github.com/extremeshok/clamav-unofficial-sigs)
 
 ## Usage
 Clamav will run listening on port 3310, then you can point your service/container (Exim ,Rspamd, etc...) to this port.
