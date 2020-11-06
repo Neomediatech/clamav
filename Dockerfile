@@ -1,6 +1,6 @@
 FROM neomediatech/ubuntu-base:20.04
 
-ENV VERSION=0.102.4 \
+ENV VERSION=0.103.0 \
     SERVICE=clamav
 
 LABEL maintainer="docker-dario@neomediatech.it" \
