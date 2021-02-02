@@ -12,7 +12,7 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 RUN apt-get update && \
     apt-get install -y ca-certificates curl build-essential libxml2 netcat \ 
                        openssl libssl-dev libcurl4-openssl-dev zlib1g-dev libpng-dev \ 
-                       libxml2-dev libjson-c-dev libbz2-dev libpcre3-dev ncurses-dev && \
+                       libxml2-dev libjson-c-dev libbz2-dev libpcre3-dev ncurses-dev dnsutils && \
     curl --fail --show-error --location --output clamav-${VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz" && \
     curl --fail --show-error --location --output clamav-${VERSION}.tar.gz.sig -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz.sig" && \
     tar --extract --gzip --file=clamav-${VERSION}.tar.gz && \
