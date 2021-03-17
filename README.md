@@ -11,7 +11,7 @@ You can run this container with this command:
 `docker run -d --name clamav neomediatech/clamav`  
 
 Logs are written inside the container, in /var/log/clamav/, and on stdout. You can see realtime logs running this command:  
-`docker logs -f clamav-ubuntu`  
+`docker logs -f clamav`  
 `CTRL c` to stop seeing logs.  
 
 If you want to map logs outside the container you can add:  
@@ -43,5 +43,5 @@ Save on a file and then run:
 
 ## Unofficial Signatures
 From this Dockerfile version, Unofficial Signatures are enabled by default.  
-If you don't want it run the container wit env variable `UNOFFICIAL_SIGS=no`  
+If you don't want it, run the container with env variable `UNOFFICIAL_SIGS=no`  
 for ex: `docker run -d --name clamav -e UNOFFICIAL_SIGS=no neomediatech/clamav`  
