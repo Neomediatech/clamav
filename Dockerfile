@@ -54,7 +54,10 @@ RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     echo "LogTime yes" >> ${CLAM_ETC}/clamd.conf && \
     echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/clamd.conf && \
     mkdir ${CLAM_DB} && \
-    chown ${CLAM_USER}: ${CLAM_DB} 
+    chown ${CLAM_USER}: ${CLAM_DB} && \
+    groupadd -g 124 Debian-exim && \
+    useradd -u 116 -g Debian-exim Debian-exim && \
+    usermod -G Debian-exim clamav 
 
 # volume for virus definitions
 VOLUME ["/var/lib/clamav"]
