@@ -30,8 +30,10 @@ if [ $UNOFFICIAL_SIGS = "yes" ]; then
   chmod +x clamav-unofficial-sigs.sh
   [ ! -d /etc/clamav-unofficial-sigs ] && mkdir -p /etc/clamav-unofficial-sigs
   cd /etc/clamav-unofficial-sigs
-  [ ! -f master.conf ] && curl --fail --show-error --location --output master.conf -- ${BASE_URL}/config/master.conf
-  [ ! -f user.conf ]   && curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf
+  # [ ! -f master.conf ] && 
+  curl --fail --show-error --location --output master.conf -- ${BASE_URL}/config/master.conf
+  # [ ! -f user.conf ]   && 
+  curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf
   if [ ! -f os.conf ]; then
     cat <<EOF > os.conf
 clam_user="clamav"
