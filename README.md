@@ -1,5 +1,3 @@
-[![](https://images.microbadger.com/badges/version/neomediatech/clamav.svg)](https://microbadger.com/images/neomediatech/clamav "Get your own version badge on microbadger.com")
-[![](https://images.microbadger.com/badges/image/neomediatech/clamav.svg)](https://microbadger.com/images/neomediatech/clamav)
 ![](https://img.shields.io/github/last-commit/Neomediatech/clamav.svg?style=plastic)
 ![](https://img.shields.io/github/repo-size/Neomediatech/clamav.svg?style=plastic)
 
