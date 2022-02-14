@@ -21,6 +21,8 @@ for file in bytecode.cvd daily.cvd main.cvd; do
   fi
 done
 
+/usr/local/bin/freshclam 
+
 # set Clamav Unofficial Sigs
 UNOFFICIAL_SIGS=${UNOFFICIAL_SIGS:-yes}
 if [ $UNOFFICIAL_SIGS = "yes" ]; then
