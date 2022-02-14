@@ -21,7 +21,7 @@ for file in bytecode.cvd daily.cvd main.cvd; do
   fi
 done
 
-/usr/local/bin/freshclam 
+freshclam 
 
 # set Clamav Unofficial Sigs
 UNOFFICIAL_SIGS=${UNOFFICIAL_SIGS:-yes}
@@ -61,7 +61,7 @@ EOF
   while true; do sleep 3600 ; /clamav-unofficial-sigs.sh --verbose ; done &
 fi
 
-exec /usr/local/bin/freshclam -d &
+exec freshclam -d &
 
-exec tail -F $LOGS &
+#exec tail -F $LOGS &
 exec "$@"

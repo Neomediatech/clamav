@@ -1,6 +1,59 @@
+FROM neomediatech/ubuntu-base:20.04 AS builder
+
+ENV VERSION=0.104.2 
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc make pkg-config python3 python3-pip python3-pytest valgrind \
+    check libbz2-dev libcurl4-openssl-dev libjson-c-dev libmilter-dev \
+    libncurses5-dev libpcre2-dev libssl-dev libxml2-dev zlib1g-dev \
+    ca-certificates curl build-essential libxml2 netcat \ 
+    openssl libssl-dev libcurl4-openssl-dev libpng-dev \ 
+    libpcre3-dev ncurses-dev dnsutils libevent-pthreads-2.1-7 && \
+    python3 -m pip install cmake && \
+    curl --fail --show-error --location --output clamav-${VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz" && \
+    tar xzf clamav-${VERSION}.tar.gz && \
+    cd clamav-${VERSION} && \
+    mkdir -p build && cd build && \
+    cmake .. \
+          -DCMAKE_BUILD_TYPE="Release" \
+          -DCMAKE_INSTALL_PREFIX="/usr" \
+          -DCMAKE_INSTALL_LIBDIR="/usr/lib" \
+          -DAPP_CONFIG_DIRECTORY="/etc/clamav" \
+          -DDATABASE_DIRECTORY="/var/lib/clamav" \
+          -DENABLE_CLAMONACC=OFF \
+          -DENABLE_EXAMPLES=OFF \
+          -DENABLE_JSON_SHARED=ON \
+          -DENABLE_MAN_PAGES=OFF \
+          -DENABLE_MILTER=OFF \
+          -DENABLE_STATIC_LIB=OFF && \
+    make DESTDIR="/clamav" -j$(($(nproc) - 1)) install && \
+    rm -r \
+       "/clamav/usr/include" \
+       "/clamav/usr/lib/pkgconfig/" && \
+    sed -e "s|^\(Example\)|\# \1|" \
+        -e "s|.*\(PidFile\) .*|\1 /run/lock/clamd.pid|" \
+        -e "s|.*\(LocalSocket\) .*|\1 /run/clamav/clamd.ctl|" \
+        -e "s|.*\(TCPSocket\) .*|\1 3310|" \
+        -e "s|.*\(TCPAddr\) .*|\1 0.0.0.0|" \
+        -e "s|.*\(User\) .*|\1 clamav|" \
+        -e "s|^\#\(LogTime\).*|\1 yes|" \
+        -e "s|^\#\(Foreground\).*|\1 yes|" \
+        "/clamav/etc/clamav/clamd.conf.sample" > "/clamav/etc/clamav/clamd.conf" && \
+    sed -e "s|^\(Example\)|\# \1|" \
+        -e "s|.*\(PidFile\) .*|\1 /run/lock/freshclam.pid|" \
+        -e "s|.*\(DatabaseOwner\) .*|\1 clamav|" \
+        -e "s|^\#\(NotifyClamd\).*|\1 /etc/clamav/clamd.conf|" \
+        -e "s|^\#\(ScriptedUpdates\).*|\1 no|" \
+        -e "s|^\#\(Checks\).*|\1 24|" \
+        -e "s|^\#\(Foreground\).*|\1 yes|" \
+        "/clamav/etc/clamav/freshclam.conf.sample" > "/clamav/etc/clamav/freshclam.conf" 
+
+RUN rm -rf "/clamav/usr/share/doc/"
+
 FROM neomediatech/ubuntu-base:20.04
 
-ENV VERSION=0.103.3 \
+ENV VERSION=0.104.2 \
     SERVICE=clamav
 
 LABEL maintainer="docker-dario@neomediatech.it" \
@@ -10,54 +63,26 @@ LABEL maintainer="docker-dario@neomediatech.it" \
       org.label-schema.maintainer=Neomediatech
 
 RUN apt-get update && \
-    apt-get install -y ca-certificates curl build-essential libxml2 netcat \ 
-                       openssl libssl-dev libcurl4-openssl-dev zlib1g-dev libpng-dev \ 
-                       libxml2-dev libjson-c-dev libbz2-dev libpcre3-dev ncurses-dev dnsutils && \
-    curl --fail --show-error --location --output clamav-${VERSION}.tar.gz -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz" && \
-    curl --fail --show-error --location --output clamav-${VERSION}.tar.gz.sig -- "http://www.clamav.net/downloads/production/clamav-${VERSION}.tar.gz.sig" && \
-    tar --extract --gzip --file=clamav-${VERSION}.tar.gz && \
-    cd clamav-${VERSION} && \
-    ./configure && \
-    make -j2 && make install && \
-    ldconfig && \
-    cd .. && rm -rf clamav-${VERSION}* && \
-    apt-get purge -y --auto-remove \
-      build-essential \
-      libpcre3-dev libcurl4-openssl-dev zlib1g-dev libpng-dev\
-      libssl-dev libxml2-dev libbz2-dev libpcre3-dev ncurses-dev && \
+    apt-get install -y --no-install-recommends \
+      libjson-c4 libbz2-1.0 libcurl4 libltdl7 zlib1g libevent-pthreads-2.1-7 \
+      ca-certificates curl netcat dnsutils && \
     rm -rf /var/lib/apt/lists*
 
 # configure freshclam
 ENV CLAM_USER="clamav" \
     CLAM_UID="1000" \
-    CLAM_ETC="/usr/local/etc" \
+    CLAM_ETC="/etc/clamav" \
     CLAM_DB="/var/lib/clamav" \
     CLAM_CHECKS="24" \
     CLAM_DAEMON_FOREGROUND="yes"
 RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
-    cp ${CLAM_ETC}/freshclam.conf.sample ${CLAM_ETC}/freshclam.conf && \
-    sed -i "s/^Example/# Example/; \
-      s/#LogTime yes/LogTime yes/; \
-      s/#ScriptedUpdates yes/ScriptedUpdates no/; \
-      s/#Checks 24/Checks ${CLAM_CHECKS}/; \
-      s/#Foreground yes/Foreground ${CLAM_DAEMON_FOREGROUND}/; \ 
-      s/#NotifyClamd.*$/NotifyClamd \/usr\/local\/etc\/clamd\.conf/" ${CLAM_ETC}/freshclam.conf && \
-    echo "UpdateLogFile /var/log/clamav/freshclam.log" >> ${CLAM_ETC}/freshclam.conf && \
-    echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/freshclam.conf && \
-    cp ${CLAM_ETC}/clamd.conf.sample ${CLAM_ETC}/clamd.conf && \
-    echo "Foreground yes" >> ${CLAM_ETC}/clamd.conf && \
-    sed -i 's/^Example/#Example/' ${CLAM_ETC}/clamd.conf && \
-    echo "LocalSocket /run/clamav/clamd.ctl" >> ${CLAM_ETC}/clamd.conf && \
-    echo "TCPAddr 0.0.0.0" >> ${CLAM_ETC}/clamd.conf && \
-    echo "TCPSocket 3310" >> ${CLAM_ETC}/clamd.conf && \
-    echo "LogFile /var/log/clamav/clamd.log" >> ${CLAM_ETC}/clamd.conf && \
-    echo "LogTime yes" >> ${CLAM_ETC}/clamd.conf && \
-    echo "DatabaseDirectory ${CLAM_DB}" >> ${CLAM_ETC}/clamd.conf && \
     mkdir ${CLAM_DB} && \
     chown ${CLAM_USER}: ${CLAM_DB} && \
     groupadd -g 124 Debian-exim && \
     useradd -u 116 -g Debian-exim Debian-exim && \
     usermod -G Debian-exim clamav 
+
+COPY --from=builder "/clamav" "/"
 
 # volume for virus definitions
 VOLUME ["/var/lib/clamav"]
@@ -69,4 +94,4 @@ EXPOSE 3310
 
 HEALTHCHECK --interval=60s --timeout=3s --start-period=60s --retries=10 CMD echo PING | nc 127.0.0.1 3310 || exit 1
 ENTRYPOINT ["/entrypoint.sh"]
-CMD ["/usr/local/sbin/clamd"]
+CMD ["clamd"]
