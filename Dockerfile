@@ -42,6 +42,7 @@ RUN sed -e "s|^\(Example\)|\# \1|" \
         -e "s|.*\(User\) .*|\1 clamav|" \
         -e "s|^\#\(LogTime\).*|\1 yes|" \
         -e "s|^\#\(Foreground\).*|\1 yes|" \
+        -e "s|^\#\(DatabaseDirectory\).*|\1 /var/lib/clamav|" \
         "/usr/local/etc/clamd.conf.sample" > "/usr/local/etc/clamd.conf" && \
     sed -e "s|^\(Example\)|\# \1|" \
         -e "s|.*\(PidFile\) .*|\1 /run/lock/freshclam.pid|" \
@@ -50,6 +51,7 @@ RUN sed -e "s|^\(Example\)|\# \1|" \
         -e "s|^\#\(ScriptedUpdates\).*|\1 no|" \
         -e "s|^\#\(Checks\).*|\1 24|" \
         -e "s|^\#\(Foreground\).*|\1 yes|" \
+        -e "s|^\#\(DatabaseDirectory\).*|\1 /var/lib/clamav|" \
         "/usr/local/etc/freshclam.conf.sample" > "/usr/local/etc/freshclam.conf" 
 
 # volume for virus definitions
