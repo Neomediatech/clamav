@@ -1,6 +1,6 @@
 ARG CLAMAV_VERSION=0.105.1
 
-FROM neomediatech/ubuntu-base:22.04 AS builder
+FROM neomediatech/ubuntu-base:20.04 AS builder
 
 ARG CLAMAV_VERSION
 
@@ -55,7 +55,7 @@ RUN cd clamav-${CLAMAV_VERSION} && \
 
 RUN rm -rf "/clamav/usr/share/doc/"
 
-FROM neomediatech/ubuntu-base:22.04
+FROM neomediatech/ubuntu-base:20.04
 
 ARG CLAMAV_VERSION
 ENV CLAMAV_VERSION=$CLAMAV_VERSION \
@@ -69,7 +69,7 @@ LABEL maintainer="docker-dario@neomediatech.it" \
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-      libjson-c5 libbz2-1.0 libcurl4 libltdl7 zlib1g libevent-pthreads-2.1-7 \
+      libjson-c4 libbz2-1.0 libcurl4 libltdl7 zlib1g libevent-pthreads-2.1-7 \
       ca-certificates curl netcat dnsutils && \
     rm -rf /var/lib/apt/lists*
 
