@@ -60,6 +60,10 @@ RUN cp /init /initi.orig && \
     cat /tmp/init > /init && \
     rm /tmp/init
 
+RUN addgroup -g 124 Debian-exim && \
+    adduser -u 116 -D Debian-exim -G Debian-exim && \
+    adduser clamav Debian-exim
+
 # volume for virus definitions
 VOLUME ["/var/lib/clamav"]
 

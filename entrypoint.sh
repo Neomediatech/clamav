@@ -20,7 +20,7 @@ for file in bytecode.cvd daily.cvd main.cvd; do
   fi
 done
 
-#freshclam 
+freshclam 
 
 # set Clamav Unofficial Sigs
 UNOFFICIAL_SIGS=${UNOFFICIAL_SIGS:-yes}
@@ -73,6 +73,8 @@ EOF
   # echo "$prev_file" > /etc/clamav-unofficial-sigs/os.conf
   while true; do sleep 3600 ; /clamav-unofficial-sigs.sh --verbose ; done &
 fi
+
+ln -s /run/clamav/clamd.ctl /run/clamav/clamd.sock || err=0
 
 #exec freshclam -d &
 
