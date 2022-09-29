@@ -92,8 +92,10 @@ EOF
   [ $? -ne 0 ] && MISSING="bind9-host"
   which rsync 1>/dev/null
   [ $? -ne 0 ] && MISSING="$MISSING rsync"
-  apt-get update
-  apt-get install -y --no-install-recommends $MISSING
+  if [ "$MISSING" != "" ]; then
+    apt-get update
+    apt-get install -y --no-install-recommends $MISSING
+  fi
   rm -rf /var/lib/apt/lists*
   /clamav-unofficial-sigs.sh --verbose
   while true; do sleep 3600 ; /clamav-unofficial-sigs.sh --verbose ; done &
