@@ -1,8 +1,9 @@
+#!/tini /bin/bash
 
 LOGDIR="/var/log/clamav"
 LOGS="$LOGDIR/clamd.log $LOGDIR/freshclam.log"
 CLAMDIR="/var/lib/clamav"
-mkdir -p $LOGDIR /run/clamav /var/lib/clamav-unofficial-sigs ; chown clamav:clamav $LOGDIR /run/clamav ; touch $LOGS ; chown clamav:clamav $LOGS ; chmod 777 $LOGDIR ; chmod 666 $LOGS
+mkdir -p $LOGDIR /run/clamav ; chown clamav:clamav $LOGDIR /run/clamav ; touch $LOGS ; chown clamav:clamav $LOGS ; chmod 777 $LOGDIR ; chmod 666 $LOGS
 
 if [ -d $CLAMDIR ]; then
   chown clamav:clamav $CLAMDIR
@@ -12,22 +13,50 @@ if [ -d /usr/local/share/clamav ]; then
   chown clamav:clamav /usr/local/share/clamav
 fi
 
-for file in bytecode.cvd daily.cvd main.cvd; do
-  if [ ! -f $CLAMDIR/$file ]; then
-    echo "$CLAMDIR/$file not found, downloading from database.clamav.net..."
-    curl -o $CLAMDIR/$file http://database.clamav.net/$file
-    chown clamav:clamav $CLAMDIR/$file
-  fi
-done
+#for file in bytecode.cvd daily.cvd main.cvd; do
+#  if [ ! -f $CLAMDIR/$file ]; then
+#    echo "$CLAMDIR/$file not found, downloading from database.clamav.net..."
+#    curl -o $CLAMDIR/$file http://database.clamav.net/$file
+#    chown clamav:clamav $CLAMDIR/$file
+#  fi
+#done
 
-freshclam 
+# download initial database if it doesn't exists
+if [ ! -f "$CLAMDIR/main.cvd" ]; then
+  echo "Updating initial database"
+  freshclam --foreground --stdout
+fi
+
+#freshclam 
+
+# start ClamAV in background
+echo "Starting ClamAV"
+if [ -S "/run/clamav/clamd.sock" ]; then
+  unlink "/run/clamav/clamd.sock"
+fi
+if [ -S "/run/clamav/clamd.ctl" ]; then
+  unlink "/run/clamav/clamd.ctl"
+fi
+clamd --foreground &
+while [ ! -S "/run/clamav/clamd.ctl" ]; do
+  if [ "${_timeout:=0}" -gt "${CLAMD_STARTUP_TIMEOUT:=1800}" ]; then
+    echo
+    echo "Failed to start clamd"
+    exit 1
+  fi
+  printf "\r%s" "Socket for clamd not found yet, retrying (${_timeout}/${CLAMD_STARTUP_TIMEOUT}) ..."
+  sleep 1
+  _timeout="$((_timeout + 1))"
+done
+echo "socket found, clamd started."
+[ ! -L "/run/clamav/clamd.sock" ] && ln -s /run/clamav/clamd.ctl /run/clamav/clamd.sock || ok=1
 
 # set Clamav Unofficial Sigs
 UNOFFICIAL_SIGS=${UNOFFICIAL_SIGS:-yes}
 if [ $UNOFFICIAL_SIGS = "yes" ]; then
   BASE_URL="https://raw.githubusercontent.com/extremeshok/clamav-unofficial-sigs/master"
   cd /
-  wget -O clamav-unofficial-sigs.sh ${BASE_URL}/clamav-unofficial-sigs.sh
+  curl --fail --show-error --location --output clamav-unofficial-sigs.sh -- ${BASE_URL}/clamav-unofficial-sigs.sh
   # apply patch #386 (https://github.com/extremeshok/clamav-unofficial-sigs/pull/386/files)
   grep -q work_dir_urlhausdt clamav-unofficial-sigs.sh
   [ $? -eq 0 ] && sed -i 's/work_dir_urlhausdt/work_dir_urlhausd/' clamav-unofficial-sigs.sh
@@ -46,36 +75,34 @@ if [ $UNOFFICIAL_SIGS = "yes" ]; then
   chmod +x clamav-unofficial-sigs.sh
   [ ! -d /etc/clamav-unofficial-sigs ] && mkdir -p /etc/clamav-unofficial-sigs
   cd /etc/clamav-unofficial-sigs
-  # [ ! -f master.conf ] && 
-  wget -O master.conf ${BASE_URL}/config/master.conf
-  # [ ! -f user.conf ]   && 
-  wget -O user.conf ${BASE_URL}/config/user.conf
+  curl --fail --show-error --location --output master.conf -- ${BASE_URL}/config/master.conf
+  curl --fail --show-error --location --output user.conf   -- ${BASE_URL}/config/user.conf
   if [ ! -f os.conf ]; then
     cat <<EOF > os.conf
 clam_user="clamav"
 clam_group="clamav"
 clam_dbs="/var/lib/clamav"
-clamd_socket="/run/clamav/clamd.sock"
+clamd_socket="/run/clamav/clamd.ctl"
 enable_random="no"
 # https://eXtremeSHOK.com ######################################################
 EOF
   fi
   MISSING=""
   which host 1>/dev/null
-  [ $? -ne 0 ] && MISSING="bind-tools"
+  [ $? -ne 0 ] && MISSING="bind9-host"
   which rsync 1>/dev/null
   [ $? -ne 0 ] && MISSING="$MISSING rsync"
-  apk update 
-  apk add $MISSING
-  # prev_file=$(cat /etc/clamav-unofficial-sigs/os.conf)
-  # echo 'enable_random="no"' >> /etc/clamav-unofficial-sigs/os.conf
+  apt-get update
+  apt-get install -y --no-install-recommends $MISSING
+  rm -rf /var/lib/apt/lists*
   /clamav-unofficial-sigs.sh --verbose
-  # echo "$prev_file" > /etc/clamav-unofficial-sigs/os.conf
   while true; do sleep 3600 ; /clamav-unofficial-sigs.sh --verbose ; done &
 fi
 
-ln -s /run/clamav/clamd.ctl /run/clamav/clamd.sock || err=0
+exec freshclam -d &
 
-#exec freshclam -d &
+# Wait forever (or until canceled)
+exec tail -f "/dev/null"
 
-#exec "$@"
+exit 0
+
