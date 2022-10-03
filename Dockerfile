@@ -18,7 +18,7 @@ RUN apt-get update && apt-get -y dist-upgrade && \
 
 # configure freshclam
 ENV CLAM_USER="clamav" \
-    CLAM_UID="5000" \
+    CLAM_UID="5002" \
     CLAM_ETC="/etc/clamav" \
     CLAM_DB="/var/lib/clamav" \
     CLAM_CHECKS="24" \
@@ -26,8 +26,8 @@ ENV CLAM_USER="clamav" \
 RUN useradd -u ${CLAM_UID} ${CLAM_USER} && \
     mkdir ${CLAM_DB} && \
     chown ${CLAM_USER}: ${CLAM_DB} && \
-    groupadd -g 124 Debian-exim && \
-    useradd -u 116 -g Debian-exim Debian-exim && \
+    groupadd -g 5001 Debian-exim && \
+    useradd -u 5001 -g Debian-exim Debian-exim && \
     usermod -G Debian-exim clamav
 
 # install ClamAV from .deb
