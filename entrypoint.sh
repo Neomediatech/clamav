@@ -38,7 +38,7 @@ if [ -S "/run/clamav/clamd.ctl" ]; then
   unlink "/run/clamav/clamd.ctl"
 fi
 clamd --foreground &
-while [ ! -S "/run/clamav/clamd.sock" ]; do
+while [ ! -S "/run/clamav/clamd.sock" -a ! -S "/run/clamav/clamd.ctl" ]; do
   if [ "${_timeout:=0}" -gt "${CLAMD_STARTUP_TIMEOUT:=1800}" ]; then
     echo
     echo "Failed to start clamd"
@@ -49,7 +49,8 @@ while [ ! -S "/run/clamav/clamd.sock" ]; do
   _timeout="$((_timeout + 1))"
 done
 echo "socket found, clamd started."
-[ ! -L "/run/clamav/clamd.ctl" ] && ln -s /run/clamav/clamd.sock /run/clamav/clamd.ctl || ok=1
+[ ! -L "/run/clamav/clamd.ctl" -a ! -S "/run/clamav/clamd.ctl" ] && ln -s /run/clamav/clamd.sock /run/clamav/clamd.ctl || ok=1
+[ ! -L "/run/clamav/clamd.sock" -a ! -S "/run/clamav/clamd.sock" ] && ln -s /run/clamav/clamd.ctl /run/clamav/clamd.sock || ok=1
 
 # set Clamav Unofficial Sigs
 UNOFFICIAL_SIGS=${UNOFFICIAL_SIGS:-yes}
