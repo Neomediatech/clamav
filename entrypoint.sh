@@ -1,5 +1,11 @@
 #!/tini /bin/bash
 
+CLAMAV_START=${CLAMAV_START:-yes}
+if [ "$CLAMAV_START" = "no" ]; then
+  exec tail -f "/dev/null"
+  exit 0
+fi
+
 LOGDIR="/var/log/clamav"
 LOGS="$LOGDIR/clamd.log $LOGDIR/freshclam.log"
 CLAMDIR="/var/lib/clamav"
