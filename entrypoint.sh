@@ -2,8 +2,7 @@
 
 CLAMAV_START=${CLAMAV_START:-yes}
 if [ "$CLAMAV_START" = "no" ]; then
-  exec tail -f "/dev/null"
-  exit 0
+  while true; do { echo -e 'PONG'; } | nc -N -l 3310; done
 fi
 
 LOGDIR="/var/log/clamav"
