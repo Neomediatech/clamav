@@ -18,6 +18,10 @@ if [ -d /usr/local/share/clamav ]; then
   chown clamav:clamav /usr/local/share/clamav
 fi
 
+for CONF in clamd.conf freshclam.conf; do
+  [ -f /data/${CONF} ] && cat /data/${CONF} > /usr/local/etc/${CONF}
+done
+
 #for file in bytecode.cvd daily.cvd main.cvd; do
 #  if [ ! -f $CLAMDIR/$file ]; then
 #    echo "$CLAMDIR/$file not found, downloading from database.clamav.net..."
