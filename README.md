@@ -1,3 +1,10 @@
+# NO MORE UPDATED! SEE BELOW
+
+> [!CAUTION]
+> Now I'm using [this stack](https://github.com/Neomediatech/clamav-unofficial-sigs/blob/main/docker-compose.yml)
+>
+> THIS REPO WILL NOT BE UPDATED
+
 ![](https://img.shields.io/github/last-commit/Neomediatech/clamav.svg?style=plastic)
 ![](https://img.shields.io/github/repo-size/Neomediatech/clamav.svg?style=plastic)
 
